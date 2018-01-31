@@ -67,9 +67,7 @@ static int* generate_field(int size) {
 	return field;
 }
 
-static int gadd(int a, int b) {
-	return a^b;
-}
+
 
 static int* create_log(int* ilog_table, int size) {
 
@@ -87,6 +85,10 @@ struct GaloisField {
 	int* log;
 	int size;
 };
+
+static int gfadd(int a, int b) {
+	return a^b;
+}
 
 static int gfmul(int a, int b, struct GaloisField f) {
 
@@ -112,6 +114,13 @@ static struct GaloisField* create_field(int size) {
 	return f;
 }
 
+static void destroyGF(struct GaloisField* f) {
+
+	free(f->ilog);
+	free(f->log);
+	free(f);
+}
+
 
 int main() {
 
@@ -129,5 +138,7 @@ int main() {
 	int v = gfdiv(13, 10, *f);
 	printf("%i\n", v);
 
+	destroyGF(f);
+	
 	return 0;
 }
