@@ -2,7 +2,7 @@
 #include "immintrin.h"
 #include "stdio.h"
 
-static int generator = 0x03;
+static int generator = 0x09;
 
 static int gmul(int a, int b) {
 
@@ -36,6 +36,15 @@ static int reduce(int a, int size) {
 		case 5:
 			poly = 37; // x^5 + x^2 + 1
 			break;
+		case 6:
+			poly = 67; // x^6 + x + 1
+			break;
+		case 7:
+			poly = 131;
+			break;
+		case 8:
+			poly = 285; // x^8 + x^4 + x^3 + x^2 + 1;
+			break;
 	}
 
 	int mask = 1 << size;
@@ -67,13 +76,11 @@ static int* generate_field(int size) {
 	return field;
 }
 
-
-
 static int* create_log(int* ilog_table, int size) {
 
 	int* log = malloc(size * sizeof(int) - 1);
-	for(int i = 0; i < size -1; i++) {
-		// printf("log(%i) = %i\n", ilog_table[i], i);
+	for(int i = 0; i < size - 1; i++) {
+		printf("log(%i) = %i\n", ilog_table[i], i);
 		log[ilog_table[i]] = i;
 
 	}
@@ -114,7 +121,7 @@ static struct GaloisField* create_field(int size) {
 	return f;
 }
 
-static void destroyGF(struct GaloisField* f) {
+static void destroy_gf(struct GaloisField* f) {
 
 	free(f->ilog);
 	free(f->log);
@@ -132,13 +139,13 @@ int main() {
 	// printf("%i %i %i %i %i %i %i %i\n",
 	// 	f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7]);
 
-	int size = 5;
+	int size = 8;
 	struct GaloisField* f = create_field(size);
 
-	int v = gfdiv(13, 10, *f);
+	int v = gfdiv(10, 13, *f);
 	printf("%i\n", v);
 
-	destroyGF(f);
+	destroy_gf(f);
 	
 	return 0;
 }
