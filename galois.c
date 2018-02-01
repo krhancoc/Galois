@@ -2,7 +2,13 @@
 #include "immintrin.h"
 #include "stdio.h"
 
-static int generator = 0x09;
+static int GENERATOR = 9;
+
+struct GaloisField {
+	int* ilog;
+	int* log;
+	int size;
+};
 
 static int gmul(int a, int b) {
 
@@ -20,7 +26,18 @@ static int gmul(int a, int b) {
 }
 
 static int reduce(int a, int size) {
-	
+	/**
+		TODO: Possibly change irriducible poly's to Lucky poly's as dictated in 
+		https://eprint.iacr.org/2007/192.pdf possibly not needed/or possible need
+		to read more than just abstract :). Seems they say the choice relies on some
+		the polynomial of choice which is either a trinomial or pentanomial 
+		where 
+			x^m + x^a + x^b + x^c + 1
+					OR
+			x^m + x^a + 1
+				where m > a > b > c
+		It requires that m - a >= w where w is our word size. 
+	**/
 	int m = a;
 	int poly;
 	switch (size) {
@@ -43,7 +60,10 @@ static int reduce(int a, int size) {
 			poly = 131;
 			break;
 		case 8:
-			poly = 285; // x^8 + x^4 + x^3 + x^2 + 1;
+			poly = 285; // x^8 + x^4+ x^3 + x^2 + 1; 
+			break;
+		case 16:
+			poly = 65581; //1 + x^2 + x^3 + x^5 + x^16 <--- This for example would be efficient in W=8?  I think?
 			break;
 	}
 
@@ -71,7 +91,7 @@ static int* generate_field(int size) {
 	int t = 1;
 	for(int i = 0; i < (1 << size); i++) {
 		field[i] = t;
-		t = reduce_gmul(t, generator, size);
+		t = reduce_gmul(t, GENERATOR, size);
 	}
 	return field;
 }
@@ -80,18 +100,12 @@ static int* create_log(int* ilog_table, int size) {
 
 	int* log = malloc(size * sizeof(int) - 1);
 	for(int i = 0; i < size - 1; i++) {
-		printf("log(%i) = %i\n", ilog_table[i], i);
+		//printf("log(%i) = %i\n", ilog_table[i], i);
 		log[ilog_table[i]] = i;
 
 	}
 	return log;
 }
-
-struct GaloisField {
-	int* ilog;
-	int* log;
-	int size;
-};
 
 static int gfadd(int a, int b) {
 	return a^b;
@@ -128,7 +142,6 @@ static void destroy_gf(struct GaloisField* f) {
 	free(f);
 }
 
-
 int main() {
 
 	// __m256i a = _mm256_set1_epi32(3);
@@ -139,7 +152,7 @@ int main() {
 	// printf("%i %i %i %i %i %i %i %i\n",
 	// 	f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7]);
 
-	int size = 8;
+	int size = 16;
 	struct GaloisField* f = create_field(size);
 
 	int v = gfdiv(10, 13, *f);
