@@ -1,8 +1,26 @@
-default: program
+CC = gcc
+FLAGS = -mavx -mavx2
 
-program: galois.c galois.h
-	gcc -mavx -mavx2  -o galois galois.c
-	
-assembly: sse.c
-	gcc -mavx -mavx2  -S -o sse.asm sse.c
-	
+SOURCEDIR = /src/code
+BUILDDIR = bin
+
+EXECUTABLE = galois
+SOURCEDIR = src
+SOURCES = $(wildcard $(SOURCEDIR)/*.c)
+OBJECTS = $(patsubst $(SOURCEDIR)/*.c,$(BUILDIR)/%.o,$(SOURCES))
+
+all: dir $(BUILDDIR)/$(EXECUTABLE)
+
+dir:
+	mkdir -p $(BUILDDIR)
+
+$(BUILDDIR)/$(EXECUTABLE): $(OBJECTS)
+	$(CC) $^ -o $@
+
+# $(OBJECTS): $(BUILDDIR)/%.o : $(SOURCEDIR)/%.c
+# 	$(CC) $(FLAGS) $< -o $@
+
+clean:
+	rm -rf $(BUILDDIR)
+run:
+	./$(BUILDDIR)/$(EXECUTABLE)

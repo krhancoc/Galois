@@ -25,19 +25,21 @@ static int gmul(int a, int b) {
 	return sum;
 }
 
+
+/**
+	TODO: Possibly change irriducible poly's to Lucky poly's as dictated in 
+	https://eprint.iacr.org/2007/192.pdf possibly not needed/or possible need
+	to read more than just abstract :). Seems they say the choice relies on some
+	the polynomial of choice which is either a trinomial or pentanomial 
+	where 
+		x^m + x^a + x^b + x^c + 1
+				OR
+		x^m + x^a + 1
+			where m > a > b > c
+	It requires that m - a >= w where w is our word size. 
+**/
 static int reduce(int a, int size) {
-	/**
-		TODO: Possibly change irriducible poly's to Lucky poly's as dictated in 
-		https://eprint.iacr.org/2007/192.pdf possibly not needed/or possible need
-		to read more than just abstract :). Seems they say the choice relies on some
-		the polynomial of choice which is either a trinomial or pentanomial 
-		where 
-			x^m + x^a + x^b + x^c + 1
-					OR
-			x^m + x^a + 1
-				where m > a > b > c
-		It requires that m - a >= w where w is our word size. 
-	**/
+
 	int m = a;
 	int poly;
 	switch (size) {
@@ -151,7 +153,6 @@ int main() {
 	// int* f = (int*)&result;
 	// printf("%i %i %i %i %i %i %i %i\n",
 	// 	f[0], f[1], f[2], f[3], f[4], f[5], f[6], f[7]);
-
 	int size = 16;
 	struct GaloisField* f = create_field(size);
 
